@@ -68,6 +68,7 @@ process runTrimmomatic {
     """
 
 }
+<<<<<<< HEAD
 
 
 
@@ -112,3 +113,5 @@ workflow {
 
 
 
+=======
+>>>>>>> origin/main
