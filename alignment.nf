@@ -9,7 +9,7 @@ params.srr_numbers = params.srr_numbers ?:
 params.outdirtrimm = "/Users/naouel/Documents/Nextflow_Rna_seq/trimmed_files/${params.srr_numbers}_paired_trimmed.fastq.gz"
 
 // Create channel from file pairs
-reads_ch = Channel.fromFilePairs(params.outdirtrimm, checkIfExists: true)
+reads_ch = Channel.fromPath(params.outdirtrimm, checkIfExists: true)
 
 // Define a process to handle Bowtie2 alignment
 process bowtieAlignment {
