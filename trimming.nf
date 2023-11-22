@@ -6,8 +6,7 @@ params.trim_path = "/Users/naouel/Documents/Genome/Software/Trimmomatic"
 params.trim_jar = "/Users/naouel/Documents/Genome/Software/Trimmomatic/dist/jar/trimmomatic-0.40-rc1.jar"
 params.java_path = "/usr/bin/java"
 params.fastqc = "/usr/local/bin/fastqc"
-params.srr_numbers = params.srr_numbers ?:   // Default value if not provided
-
+params.srr_numbers = params.srr_numbers ?: params.srr_numbers  // Default value if not provided
 // Update the raw pattern to use the dynamic SRR number
 params.raw = "/Users/naouel/Documents/Nextflow_Rna_seq/downloaded_files/${params.srr_numbers}_*{1,2}.fastq.gz"
 params.outdirtrimm = "/Users/naouel/Documents/Nextflow_Rna_seq/trimmed_files"
@@ -44,11 +43,11 @@ process runTrimmomatic {
     file "${srr_numbers}_R2_paired_trimmed.fastq"
     file "${srr_numbers}_R1_unpaired_trimmed.fastq"
     file "${srr_numbers}_R2_unpaired_trimmed.fastq"
-    file "${srr_numbers}_merged.fastq"
+
 
     script:
     """
-    ${params.java_path} -jar ${params.trim_jar} PE -threads 27 \
+    ${params.java_path} -jar ${params.trim_jar}  PE -threads 4  \
     ${reads[0]} ${reads[1]} \
     ${params.outdirtrimm}/${srr_numbers}_R1_paired_trimmed.fastq \
     ${params.outdirtrimm}/${srr_numbers}_R2_paired_trimmed.fastq \
@@ -57,14 +56,21 @@ process runTrimmomatic {
     ILLUMINACLIP:${params.trim_path}/adapters/TruSeq3-PE-2.fa:2:30:10 \
     LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
     cd ${params.outdirtrimm}
+    # Print some debugging information
+    echo "Number of reads before trimming:"
+    zcat ${reads[0]} | wc -l
+    zcat ${reads[1]} | wc -l
 
-    # Merge trimmed reads using justConcatenate=TRUE
-    cat ${srr_numbers}_R1_paired_trimmed.fastq ${srr_numbers}_R2_paired_trimmed.fastq > ${srr_numbers}_merged.fastq
+    echo "Number of reads after trimming:"
+    zcat ${params.outdirtrimm}/${srr_numbers}_R1_paired_trimmed.fastq.gz | wc -l
+    zcat ${params.outdirtrimm}/${srr_numbers}_R2_paired_trimmed.fastq.gz | wc -l
+    # Print file sizes for debugging
+    ls -lh ${params.outdirtrimm}/${srr_numbers}_R*.fastq
 
     for file in ${srr_numbers}_*.fastq; do
          bgzip \$file
     done
-    rm ${srr_numbers}_*.fastq
+     rm ${srr_numbers}_*.fastq
     """
 
 }
