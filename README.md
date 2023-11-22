@@ -3,6 +3,20 @@
 </html>
 
 <h1>Integrative Analysis Pipeline</h1>
+<h2>Project Introduction</h2>
+
+<p>Welcome to the Nextflow Yeast Analysis Pipeline!</p>
+
+<p>This project aims to reproduce a previously conducted study on Chip-seq analysis of the Yeast Genome. The original study can be found (https://github.com/Naoueldjouher/Chip-seq_Yeast_Genome/blob/main/README.md) for further information about the study design, methodologies, and results.</p>
+
+<!-- Reproduction with Nextflow -->
+<h2>Reproducing the Pipeline with Nextflow</h2>
+
+<p>In this project,the goal is to learn how to recreate the analysis in a more scalable, modular, and reproducible manner using Nextflow.</p>
+
+<p>By following the steps outlined in this README, you will be able to execute the Nextflow pipeline and compare the results with the original study. This serves as a valuable learning experience in workflow management and reproducible research.</p>
+
+
 
 <p>This is a Nextflow pipeline for RNA-Seq analysis, covering the steps of SRA downloading, FASTQ trimming, alignment, Picard indexing, and GATK variant calling.</p>
 
@@ -13,15 +27,17 @@
   <li>Other dependencies such as Trimmomatic, BWA, Picard, GATK</li>
 </ul>
 
-<h2>Usage</h2>
+<h2>Clone the Repository</h2>
 
-<p>Clone the repository:</p>
-<code>git clone https://github.com/your-username/your-repo.git</code>
+<p>To get started with the Nextflow Yeast Analysis Pipeline, clone the repository using the following command:</p>
+<code>git clone https://github.com/Naoueldjouher/Nextflow_Pipeline_Yeast</code>
 
 <p>Navigate to the project directory:</p>
-<code>cd your-repo</code>
+<code>cd Nextflow_Pipeline_Yeast</code>
 
-<p>Run the pipeline:</p>
+<!-- Usage -->
+<h2>Usage</h2>
+<p>Once you have cloned the repository and navigated to the project directory, you can run the pipeline with the following command:</p>
 <code>nextflow your_pipeline.nf --srr_numbers </code>
 <h2>Workflow</h2>
 
@@ -129,10 +145,71 @@
   </code>
 </pre>
 
+<h2>The Size Discrepancy</h2>
+
+<p>During the execution of this pipeline, a notable observation was made regarding the size of the output files after trimming. Specifically, for example the trimmed paired-end FASTQ files for  <code>SRR1811834</code> exhibit a substantial difference in size:</p>
+
+<ul>
+  <li><code>SRR1811834_R1_paired_trimmed.fastq.gz</code>: 605 MB</li>
+  <li><code>SRR1811834_R2_paired_trimmed.fastq.gz</code>: 44 MB</li>
+</ul>
+
+<p>This discrepancy prompts further investigation into the factors contributing to the differing sizes between the forward (R1) and reverse (R2) reads after the trimming process.</p>
+<body>
+<!DOCTYPE html>
+<html lang="en">
 
 
 
+<body>
+<h2>Trimming Discrepancy Investigation</h2>
+ <p>While executing the trimming step of this RNA-Seq analysis pipeline, a notable difference in output file sizes was observed between Nextflow and standalone execution. This section explores hypotheses and provides suggested actions to investigate and address the observed discrepancies.</p>
+    <h3>Next Steps:</h3>
 
+  <ol>
+        <li><strong>Detailed Logging:</strong> Enabled detailed logging in both Nextflow and standalone executions. Examined the log files to identify any specific differences in the execution environment, parameters, or tool versions.</li>
+        <li><strong>Intermediate File Inspection:</strong> Investigated intermediate files generated during the trimming process in both scenarios. Compare the content and sizes of these intermediate files to identify any discrepancies.</li>
+        <li><strong>Tool Benchmarking:</strong> Benchmark the performance of the trimming tool outside Nextflow under similar conditions as the Nextflow workflow. Compares the runtime, resource utilization, and output file sizes.</li>
+        <li><strong>Workflow Isolation:</strong> Isolated the trimming step from the Nextflow workflow and executed it independently. Compared the results to ensure that Nextflow itself is not introducing unintended modifications.</li>
+        <li><strong>Tool Parameter Tuning:</strong> Experiment with different parameters of the trimming tool, both within and outside Nextflow. Adjust parameters related to quality thresholds, adapter removal, and other relevant settings.</li>
+    
+  </ol>
+
+  <p>Given the lack of conclusive information from the initial investigations, a decision was made to proceed with the downstream steps of the pipeline using only <code>Pair_1</code>.</p>
+
+<h2>GATK ApplyBSQR Issue</h2>
+
+<p>During the execution of this pipeline, an issue was encountered with the GATK ApplyBSQR step. Previously, the same sample was processed using this step without any errors. However, in the current run using Nextflow, the pipeline reported an error indicating a mismatch between the reads and the reference genome. The reference genome used in both runs was the same, and the input reads were identical.</p>
+
+<p><strong>Error Message:</strong></p>
+<pre>
+Error: There was an error in ApplyBSQR. No mismatches found between the read and the reference genome.
+</pre>
+
+<p><strong>Investigation Steps:</strong></p>
+
+<ul>
+  <li>Checked the reference genome: Confirmed that the reference genome used in the pipeline matched the one used successfully in previous runs.</li>
+  <li>Validated the reads: Used Picard's ValidateSamFile and Samtools' quickcheck to ensure the integrity of the input reads. No errors were reported.</li>
+  <li>Nextflow Execution: Reviewed Nextflow execution logs and parameters to identify any potential issues in the workflow.</li>
+</ul>
+
+<p><strong>Resolution:</strong></p>
+
+<p>Despite the thorough checks, the exact cause of the ApplyBSQR error remains unclear. To address this issue and proceed with the analysis, a temporary solution was implemented by bypassing the ApplyBSQR step in the current run. This decision was made based on the assurance that the input data (reads and reference genome) were consistent and valid.</p>
+
+<p><strong>Next Steps:</strong></p>
+
+<p>The ApplyBSQR step will be revisited in subsequent pipeline updates, and further investigation will be conducted to identify the root cause of the error.</p>
 
 </body>
+
 </html>
+
+
+
+
+
+
+
+
