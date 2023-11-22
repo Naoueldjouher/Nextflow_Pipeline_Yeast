@@ -74,7 +74,7 @@ process runTrimmomatic {
     """
 
 }
-<<<<<<< HEAD
+
 
 
 
